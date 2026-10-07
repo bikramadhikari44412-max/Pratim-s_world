@@ -1,2 +1,348 @@
-# Pratim-s_world
-A cute little love website made specially for Pratim's wife 💗✨
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ff5f8f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pratim's World">
+<title>Pratim's World</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#fff5f8,#ffe1ec);color:#5b1834}
+main{max-width:720px;margin:auto;padding:18px 16px 55px}
+.card{background:rgba(255,255,255,.92);border-radius:25px;padding:21px;margin:16px 0;box-shadow:0 12px 35px rgba(180,45,90,.16)}
+.hero{text-align:center;padding:70px 20px;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.hero .card{width:100%;padding:35px 22px}
+h1{font-size:clamp(30px,8vw,46px);color:#c51f5b;margin:12px 0}
+h2{color:#b51d53;margin-top:0}
+small{opacity:.65}
+.btn{border:0;border-radius:14px;padding:13px 18px;background:#f23e78;color:white;font-weight:800;font-size:15px}
+input,textarea{width:100%;padding:12px;border:1px solid #efb9cc;border-radius:12px;margin:6px 0;font-size:15px}
+.hidden{display:none}
+.ticker,.water{position:fixed;z-index:10;font-weight:800;font-size:12px;padding:10px 12px;color:white;animation:bounce 1.2s infinite;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.ticker{right:0;top:34%;background:#ff3f7d;border-radius:16px 0 0 16px}
+.water{left:0;bottom:15%;background:#8263ee;border-radius:0 16px 16px 0}
+@keyframes bounce{50%{transform:translateY(-7px)}}
+#hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+.heart{position:absolute;bottom:-30px;animation:float 6s linear forwards}
+@keyframes float{to{transform:translateY(-110vh) rotate(20deg);opacity:0}}
+.timer{font-size:25px;font-weight:900;color:#a91d4e}
+.chat{height:220px;overflow:auto;background:#fff3f7;border-radius:15px;padding:10px}
+.bubble{padding:10px 12px;border-radius:14px;margin:7px 0;background:#ffe0eb;line-height:1.4}
+.me{margin-left:auto;background:#e6dcff;max-width:85%}
+.memgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.memory{background:#fff0f5;padding:8px;border-radius:15px}
+.memory img{width:100%;border-radius:12px;display:block}
+.anniv{text-align:center;border:2px solid #ff9fbe}
+.love-gate{position:fixed;inset:0;z-index:100;background:rgba(255,245,248,.96);display:flex;align-items:center;justify-content:center;padding:22px;animation:gateIn .45s ease}
+.love-gate.hidden{display:none}
+.love-gate-card{width:min(560px,100%);background:white;border-radius:28px;padding:32px 24px;text-align:center;box-shadow:0 18px 55px rgba(180,45,90,.22);animation:lovePop .65s cubic-bezier(.2,.9,.25,1.2)}
+.love-gate-heart{font-size:54px;animation:heartPulse 1.2s infinite}
+.love-gate h2{font-size:clamp(24px,6vw,34px);margin:10px 0;color:#c51f5b}
+.love-gate p{font-size:18px;line-height:1.5;margin:12px 0 18px}
+.love-gate input{max-width:420px;text-align:center}
+.love-gate-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.love-gate .btn.secondary{background:#eee;color:#7a2447}
+.love-error{color:#c51f5b;font-weight:800;margin-top:12px}
+@keyframes gateIn{from{opacity:0}to{opacity:1}}
+@keyframes lovePop{0%{transform:scale(.72) translateY(20px);opacity:0}70%{transform:scale(1.04) translateY(-3px);opacity:1}100%{transform:scale(1) translateY(0)}}
+@keyframes heartPulse{50%{transform:scale(1.18)}}
+</style>
+</head>
+<body>
+
+<div id="hearts"></div>
+
+<section class="hero" id="hero">
+  <div class="card">
+    <small>WELCOME TO</small>
+    <h1>Pratim's World 💗</h1>
+    <p>A small place made especially for you.</p>
+    <button class="btn" onclick="enterWorld()">ENTER 💗</button>
+  </div>
+</section>
+
+<div id="loveGate" class="love-gate hidden">
+  <div class="love-gate-card">
+    <div class="love-gate-heart">💗</div>
+    <h2 id="gateTitle">Hey wait !! Who are you !???</h2>
+    <p id="gateMessage">Tell me your name first... 👀💗</p>
+    <input id="gateAnswer" placeholder="Type your answer..." autocomplete="off">
+    <div class="love-gate-actions">
+      <button class="btn" id="gateButton" onclick="checkGateAnswer()">Answer 💕</button>
+      <button class="btn secondary hidden" id="yesButton" onclick="answerYes()">Yes 😊</button>
+      <button class="btn secondary hidden" id="noButton" onclick="answerNo()">No 😒</button>
+    </div>
+    <div id="gateError" class="love-error"></div>
+  </div>
+</div>
+
+<div id="site" class="hidden">
+  <div class="ticker">💗 Pratim loves you so much</div>
+  <div class="water">💧 Stay Hydrated<br>Drink Water!</div>
+
+  <main>
+    <section class="card" style="text-align:center">
+      <small>WELCOME</small>
+      <h1>Welcome! Pratim Manna's Bou 💗🧿</h1>
+      <p>A little world of memories, messages and happy moments.</p>
+    </section>
+
+    <section id="anniv" class="card anniv hidden">
+      <h2>CONGRATULATIONS!! 😃💗✨</h2>
+      <div style="font-size:22px;font-weight:900">Happy Anniversary!! 🥰💗🧿</div>
+      <p>God bless you both!! ❤️🧿</p>
+      <div style="font-size:28px;line-height:1.5">❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️</div>
+    </section>
+
+    <section class="card">
+      <h2>💗 Our Anniversary</h2>
+      <div class="timer" id="timer">Loading...</div>
+      <small>Countdown to 10th July</small>
+    </section>
+
+    <section class="card">
+      <h2>🤖 Ask Pratim's Love Bot</h2>
+      <div class="chat" id="chat">
+        <div class="bubble">Hi! Ask me anything about Pratim. 💗</div>
+      </div>
+      <input id="question" placeholder="Pratim loves me how much?">
+      <button class="btn" onclick="askBot()">Ask 💕</button>
+    </section>
+
+    <section class="card">
+      <h2>📸 Our Memories</h2>
+      <p><small>Add your photos and save little captions.</small></p>
+      <input type="file" id="photo" accept="image/*">
+      <input id="caption" placeholder="Write a caption...">
+      <button class="btn" onclick="savePhoto()">Save Memory</button>
+      <div class="memgrid" id="memories"></div>
+    </section>
+
+    <section class="card">
+      <h2>📝 Our Notes</h2>
+      <textarea id="note" rows="4" placeholder="Write a memory or a little message..."></textarea>
+      <button class="btn" onclick="saveNote()">Save Note</button>
+      <div id="notes"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+function enterWorld(){
+  $("hero").style.display="none";
+  $("loveGate").classList.remove("hidden");
+  $("gateAnswer").focus();
+  createHearts(18);
+}
+
+function checkGateAnswer(){
+  const answer=$("gateAnswer").value.trim();
+  $("gateError").textContent="";
+
+  if(answer==="Rittika"){
+    $("gateTitle").textContent="Oh you're Pratim's wife right ??😊🙏🏽";
+    $("gateMessage").textContent="Just one more thing... 💗";
+    $("gateAnswer").classList.add("hidden");
+    $("gateButton").classList.add("hidden");
+    $("yesButton").classList.remove("hidden");
+    $("noButton").classList.remove("hidden");
+    createHearts(22);
+  }else{
+    $("gateMessage").textContent="Sorry, this page is only for Pratim's Wife, not for you !";
+    $("gateError").textContent="Please enter the correct word to continue. 💗";
+    $("gateAnswer").value="";
+    $("gateAnswer").focus();
+    createHearts(8);
+  }
+}
+
+function answerYes(){
+  $("loveGate").classList.add("hidden");
+  $("site").classList.remove("hidden");
+  createHearts(45);
+}
+
+function answerNo(){
+  $("gateMessage").textContent="Naah, you're not allowed 😒";
+  $("gateError").textContent="";
+  createHearts(10);
+}
+
+function createHearts(n){
+  for(let i=0;i<n;i++){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.textContent=["❤️","💗","💖","💕","🩷"][Math.floor(Math.random()*5)];
+    h.style.left=Math.random()*100+"%";
+    h.style.fontSize=(16+Math.random()*24)+"px";
+    h.style.animationDuration=(4+Math.random()*4)+"s";
+    $("hearts").appendChild(h);
+    setTimeout(()=>h.remove(),9000);
+  }
+}
+setInterval(()=>createHearts(1),1300);
+
+function detectBotLanguage(q){
+  const banglishWords=["bhalobashe","bhalobasha","koto","kemon","tomake","amar","thakbe","chirodin","bhalo","chele","mone","lage","ki","keno","hobe","korbe","pratim"];
+  return banglishWords.some(w=>new RegExp("\\b"+w+"\\b","i").test(q)) ? "banglish" : "english";
+}
+
+function getBotReply(q){
+  const s=q.toLowerCase().replace(/[!?.,'"]/g," ").replace(/\\s+/g," ").trim();
+  const banglish=detectBotLanguage(q);
+
+  if(/pratim.*(loves|love|bhalobashe|bhalobasha).*me|does pratim love me/.test(s)){
+    return banglish
+      ? "Haa, bhalobashe. 💗 Pratim-er kachhe tumi just kono ordinary person na—tumi emon ekjon, jar jonno o nijer moto kore effort korte chay. Ei puro little world-tao tar ekta proof. 🥰🧿"
+      : "Yes, he does. 💗 You’re not just an ordinary person to Pratim—you’re someone he genuinely wants to make feel special. This little world itself is one of his ways of showing that. 🥰🧿";
+  }
+
+  if(/how much.*(love|loves)|how much.*pratim|koto.*(bhalobashe|bhalobasha)/.test(s)){
+    return banglish
+      ? "Scale diye eta measure kora mushkil 😅💗. Kintu enough to make him put this much thought, effort and emotion into something just for you. So… onekta. Khub onekta. 🥰"
+      : "That’s not really something you can measure on a scale 😅💗. But it’s enough to make him put this much thought, effort and emotion into something made especially for you. So… a lot. Really, really a lot. 🥰";
+  }
+
+  if(/forever|chirodin|thakbe.*(forever|sathe)|stay.*(with|together)/.test(s)){
+    return banglish
+      ? "Forever-er promise ami nijer theke guarantee korte parbo na—future to future-i. 😌 But Pratim-er intention niye bolle, o emon ekjon je important manush-ke easily chere dite chay na. 💗"
+      : "I can’t honestly guarantee the future for him—no one can. 😌 But from what this little world says about him, Pratim is someone who doesn’t want to casually let go of the person who truly matters to him. 💗";
+  }
+
+  if(/good boy|bhalo chele|good.*boy|kemon.*chele/.test(s)){
+    return banglish
+      ? "Hmm… perfect bole claim korbo na 😅. Kintu caring, effort dewa, ar special manush-ke special feel koranor cheshta—ei dike Pratim-er marks definitely bhalo. 😌💗"
+      : "I wouldn’t claim he’s perfect 😅. But when it comes to caring, putting in effort, and making someone special feel genuinely special—Pratim definitely gets good marks. 😌💗";
+  }
+
+  if(/kemon.*lage|how.*feel.*about.*pratim|what.*think.*of.*pratim/.test(s)){
+    return banglish
+      ? "Honestly? Amar kachhe Pratim-ke emon ekjon mone hoy je feelings-ta actions diye dekhate bhalobashe. Ar tomake niye o je genuinely serious, seta ei app-ta dekhei besh clear. 💗✨"
+      : "Honestly? Pratim seems like someone who prefers showing his feelings through actions. And from the effort behind this little app, it’s pretty clear that he genuinely cares about you. 💗✨";
+  }
+
+  if(/who is pratim|pratim ke/.test(s)){
+    return banglish
+      ? "Pratim? 😌 Ei app-er creator, obviously! Ar amar verdict—ektu pagol, ektu cheesy, but definitely caring. 😅💗"
+      : "Pratim? 😌 The creator of this little world, obviously! My verdict—slightly crazy, slightly cheesy, but definitely caring. 😅💗";
+  }
+
+  if(/miss|mone pore/.test(s)){
+    return banglish
+      ? "Jodi question-ta hoy Pratim tomake miss kore kina—amar bot verdict: je manush tomar jonno eto kichhu banay, tar mone pora-ta pretty likely. 😌💗"
+      : "If you’re asking whether Pratim misses you—my bot verdict is: someone who puts this much thought into making something for you probably thinks about you quite a lot. 😌💗";
+  }
+
+  return banglish
+    ? "Hmm… eta niye Pratim-ke niye amar answer hobe: o perfect na, but je manush-ke genuinely care kore tar jonno o effort dite jane. 💗 Tumi aro specific kore jiggesh korte paro—ami honest answer debo. 😊"
+    : "Hmm… my answer about Pratim would be: he’s not perfect, but when someone genuinely matters to him, he knows how to put in the effort. 💗 Ask me something more specific about him—I’ll give you an honest answer. 😊";
+}
+
+function askBot(){
+  const q=$("question").value.trim();
+  if(!q)return;
+
+  const user=document.createElement("div");
+  user.className="bubble me";
+  user.textContent=q;
+  $("chat").appendChild(user);
+
+  const reply=document.createElement("div");
+  reply.className="bubble";
+  reply.textContent=getBotReply(q);
+
+  setTimeout(()=>{
+    $("chat").appendChild(reply);
+    $("chat").scrollTop=$("chat").scrollHeight;
+  },450);
+
+  $("question").value="";
+}
+
+let data=JSON.parse(localStorage.getItem("pratim_world")||'{"photos":[],"notes":[]}');
+
+function saveData(){
+  localStorage.setItem("pratim_world",JSON.stringify(data));
+}
+
+function saveNote(){
+  const n=$("note").value.trim();
+  if(!n)return;
+  data.notes.unshift(n);
+  saveData();
+  $("note").value="";
+  render();
+}
+
+function savePhoto(){
+  const file=$("photo").files[0];
+  if(!file)return alert("Please choose a photo first.");
+
+  const reader=new FileReader();
+  reader.onload=()=>{
+    data.photos.unshift({
+      src:reader.result,
+      caption:$("caption").value.trim()||"A beautiful memory 💗"
+    });
+    try{
+      saveData();
+      render();
+      $("photo").value="";
+      $("caption").value="";
+    }catch(e){
+      alert("Storage is full. Please use a smaller photo.");
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function render(){
+  $("memories").innerHTML=data.photos.map(x=>
+    '<div class="memory"><img src="'+x.src+'"><small>'+escapeHTML(x.caption)+'</small></div>'
+  ).join("");
+
+  $("notes").innerHTML=data.notes.map(x=>
+    '<div class="memory" style="margin-top:8px">'+escapeHTML(x)+'</div>'
+  ).join("");
+}
+
+function escapeHTML(s){
+  return s.replace(/[&<>"']/g,m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+
+function updateTimer(){
+  const now=new Date();
+  let year=now.getFullYear();
+  let target=new Date(year,6,10);
+
+  if(target<now) target=new Date(year+1,6,10);
+
+  if(now.getMonth()===6 && now.getDate()===10){
+    $("anniv").classList.remove("hidden");
+    $("timer").textContent="TODAY! 💗";
+    createHearts(12);
+    return;
+  }
+
+  const diff=target-now;
+  const days=Math.floor(diff/86400000);
+  const hours=Math.floor(diff/3600000)%24;
+  const minutes=Math.floor(diff/60000)%60;
+  const seconds=Math.floor(diff/1000)%60;
+
+  $("timer").textContent=days+"d "+hours+"h "+minutes+"m "+seconds+"s";
+}
+
+render();
+updateTimer();
+setInterval(updateTimer,1000);
+</script>
+</body>
+</html>
