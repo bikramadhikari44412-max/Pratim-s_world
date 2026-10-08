@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ff5f8f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pratim's World">
+<title>Pratim's World</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#fff5f8,#ffe1ec);color:#5b1834}
+main{max-width:720px;margin:auto;padding:18px 16px 55px}
+.card{background:rgba(255,255,255,.92);border-radius:25px;padding:21px;margin:16px 0;box-shadow:0 12px 35px rgba(180,45,90,.16)}
+.hero{text-align:center;padding:70px 20px;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.hero .card{width:100%;padding:35px 22px}
+h1{font-size:clamp(30px,8vw,46px);color:#c51f5b;margin:12px 0}
+h2{color:#b51d53;margin-top:0}
+small{opacity:.65}
+.btn{border:0;border-radius:14px;padding:13px 18px;background:#f23e78;color:white;font-weight:800;font-size:15px}
+input,textarea{width:100%;padding:12px;border:1px solid #efb9cc;border-radius:12px;margin:6px 0;font-size:15px}
+.hidden{display:none}
+.ticker,.water{position:fixed;z-index:10;font-weight:800;font-size:12px;padding:10px 12px;color:white;animation:bounce 1.2s infinite;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.ticker{right:0;top:34%;background:#ff3f7d;border-radius:16px 0 0 16px}
+.water{left:0;bottom:15%;background:#8263ee;border-radius:0 16px 16px 0}
+@keyframes bounce{50%{transform:translateY(-7px)}}
+#hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+.heart{position:absolute;bottom:-30px;animation:float 6s linear forwards}
+@keyframes float{to{transform:translateY(-110vh) rotate(20deg);opacity:0}}
+.timer{font-size:25px;font-weight:900;color:#a91d4e}
+.chat{height:220px;overflow:auto;background:#fff3f7;border-radius:15px;padding:10px}
+.bubble{padding:10px 12px;border-radius:14px;margin:7px 0;background:#ffe0eb;line-height:1.4}
+.me{margin-left:auto;background:#e6dcff;max-width:85%}
+.memgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.memory{background:#fff0f5;padding:8px;border-radius:15px}
+.memory img{width:100%;border-radius:12px;display:block}
+.anniv{text-align:center;border:2px solid #ff9fbe}
+.love-gate{position:fixed;inset:0;z-index:100;background:rgba(255,245,248,.96);display:flex;align-items:center;justify-content:center;padding:22px;animation:gateIn .45s ease}
+.love-gate.hidden{display:none}
+.love-gate-card{width:min(560px,100%);background:white;border-radius:28px;padding:32px 24px;text-align:center;box-shadow:0 18px 55px rgba(180,45,90,.22);animation:lovePop .65s cubic-bezier(.2,.9,.25,1.2)}
+.love-gate-heart{font-size:54px;animation:heartPulse 1.2s infinite}
+.love-gate h2{font-size:clamp(24px,6vw,34px);margin:10px 0;color:#c51f5b}
+.love-gate p{font-size:18px;line-height:1.5;margin:12px 0 18px}
+.love-gate input{max-width:420px;text-align:center}
+.love-gate-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.love-gate .btn.secondary{background:#eee;color:#7a2447}
+.love-error{color:#c51f5b;font-weight:800;margin-top:12px}
+@keyframes gateIn{from{opacity:0}to{opacity:1}}
+@keyframes lovePop{0%{transform:scale(.72) translateY(20px);opacity:0}70%{transform:scale(1.04) translateY(-3px);opacity:1}100%{transform:scale(1) translateY(0)}}
+@keyframes heartPulse{50%{transform:scale(1.18)}}
+
+/* Romantic surprise pages */
+.surprise-page{position:fixed;inset:0;z-index:150;background:radial-gradient(circle at 20% 20%,#fff 0,#fff5f8 38%,#ffdce9 100%);display:flex;align-items:center;justify-content:center;padding:24px;opacity:1;transition:opacity .55s ease}
+.surprise-page.hidden{display:none}
+.surprise-card{width:min(620px,100%);text-align:center;background:rgba(255,255,255,.9);border:1px solid rgba(255,159,190,.45);border-radius:32px;padding:38px 24px;box-shadow:0 25px 80px rgba(180,45,90,.18);animation:surprisePop .7s cubic-bezier(.2,.9,.25,1.15)}
+.surprise-icon{font-size:54px;animation:heartPulse 1.2s infinite}
+.surprise-card h2{font-size:clamp(25px,7vw,38px);margin:12px 0;color:#c51f5b}
+.surprise-card p{font-size:18px;line-height:1.55;margin:10px auto 22px;max-width:500px}
+.surprise-note{font-size:15px!important;opacity:.72}
+.flirt-page{background:radial-gradient(circle at 80% 15%,#fff 0,#fff1f6 35%,#ffd1e1 100%)}
+.flirt-card{position:relative;overflow:hidden}
+.flirt-card:before,.flirt-card:after{content:'💗';position:absolute;opacity:.12;font-size:80px;animation:drift 5s ease-in-out infinite}
+.flirt-card:before{left:-10px;top:10px}.flirt-card:after{right:-5px;bottom:5px;animation-delay:1.4s}
+.compliment{min-height:100px;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1.45;font-weight:800;color:#7f2347;padding:10px 6px;animation:complimentIn .45s ease}
+.compliment-count{font-size:12px;opacity:.55;margin-top:4px}
+.btn.glow{box-shadow:0 8px 28px rgba(242,62,120,.28);transition:transform .2s,box-shadow .2s}.btn.glow:active{transform:scale(.96)}
+.main-reveal{animation:mainReveal .9s cubic-bezier(.2,.8,.2,1)}
+.magic-card{position:relative;overflow:hidden}
+.magic-card:after{content:'✦';position:absolute;right:18px;top:12px;font-size:18px;color:#ff7fa8;animation:sparkle 2.4s infinite}
+.secret-btn{background:linear-gradient(135deg,#fff,#ffe5ef)!important;color:#a91d4e!important;border:1px solid #ffb5cc!important}
+.little-surprise{display:none;margin-top:14px;padding:15px;border-radius:18px;background:linear-gradient(135deg,#fff6f9,#ffe4ee);font-weight:700;color:#8b2a50;animation:complimentIn .5s ease}
+.little-surprise.show{display:block}
+@keyframes surprisePop{0%{transform:translateY(25px) scale(.88);opacity:0}100%{transform:none;opacity:1}}
+@keyframes complimentIn{from{opacity:0;transform:translateY(9px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes mainReveal{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+@keyframes sparkle{50%{transform:rotate(25deg) scale(1.35);opacity:.9}}
+@keyframes drift{50%{transform:translateY(-14px) rotate(8deg)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Secret menu + mini games */
+.menu-btn{position:fixed;right:14px;top:14px;z-index:80;width:48px;height:48px;border:0;border-radius:16px;background:rgba(255,255,255,.94);color:#c51f5b;font-size:25px;font-weight:900;box-shadow:0 10px 28px rgba(180,45,90,.18);backdrop-filter:blur(8px);cursor:pointer}
+.menu-btn:active{transform:scale(.92)}
+.drawer{position:fixed;inset:0;z-index:90;background:rgba(72,12,39,.28);backdrop-filter:blur(5px);display:none;align-items:flex-start;justify-content:flex-end;padding:14px}
+.drawer.show{display:flex}
+.drawer-card{width:min(360px,94vw);max-height:calc(100vh - 28px);overflow:auto;background:linear-gradient(180deg,#fff,#fff5f8);border:1px solid #ffc1d4;border-radius:26px;padding:18px;box-shadow:0 25px 80px rgba(80,15,45,.25);animation:drawerIn .35s ease}
+.drawer-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.drawer-top h2{margin:0}.drawer-close{border:0;background:#ffe3ed;color:#a91d4e;width:38px;height:38px;border-radius:12px;font-size:22px;font-weight:900}
+.drawer-item{width:100%;border:1px solid #ffd0dd;background:white;color:#7f2347;border-radius:16px;padding:14px 13px;margin-top:9px;text-align:left;font-weight:800;font-size:15px;box-shadow:0 5px 15px rgba(180,45,90,.07)}
+.drawer-note{font-size:12px;opacity:.6;text-align:center;margin:10px 0 2px}
+.panel{position:fixed;inset:0;z-index:110;background:radial-gradient(circle at 50% 10%,#fff 0,#fff4f8 38%,#ffd9e7 100%);display:none;overflow:auto;padding:70px 16px 28px}.panel.show{display:block;animation:panelIn .35s ease}
+.panel-inner{width:min(760px,100%);margin:auto}.panel-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}.panel-head h2{margin:0;flex:1}.back-btn{border:0;border-radius:13px;background:#fff;color:#a91d4e;padding:10px 13px;font-weight:900;box-shadow:0 6px 18px rgba(180,45,90,.12)}
+.love-meter-card,.hidden-note-card{background:rgba(255,255,255,.9);border:1px solid #ffc0d3;border-radius:28px;padding:25px 20px;text-align:center;box-shadow:0 20px 60px rgba(180,45,90,.16)}
+.meter-label{font-size:20px;font-weight:900;margin:12px 0;color:#8b234b}.meter-track{height:34px;border-radius:999px;background:#fff;border:2px solid #f4d5df;padding:4px;overflow:hidden;box-shadow:inset 0 2px 7px rgba(160,40,80,.08)}.meter-fill{height:100%;width:0;border-radius:999px;background:#fff;box-shadow:0 0 0 rgba(242,62,120,0);transition:width .08s linear,background .12s linear,box-shadow .12s linear;will-change:width,background}.meter-fill.meter-running{animation:meterGlow .75s infinite}.meter-fill.meter-impact{animation:meterImpact .48s cubic-bezier(.2,.9,.2,1.4) forwards}.meter-percent{font-size:36px;font-weight:1000;color:#a91d4e;margin:12px 0 3px;min-height:44px}.meter-result{font-size:16px;line-height:1.6;font-weight:900;color:#9a2551;opacity:0;transform:translateY(8px) scale(.96);transition:.5s ease}.meter-result.show{opacity:1;transform:none}.meter-sub{font-size:12px;opacity:.58;margin-top:5px}.meter-boom{position:relative;min-height:0}.meter-boom span{position:absolute;left:50%;top:50%;font-size:24px;pointer-events:none;opacity:0}.meter-boom.active span{animation:boomFly .9s ease-out forwards}.meter-boom.active span:nth-child(1){--x:-145px;--y:-75px}.meter-boom.active span:nth-child(2){--x:135px;--y:-80px}.meter-boom.active span:nth-child(3){--x:-120px;--y:65px}.meter-boom.active span:nth-child(4){--x:125px;--y:60px}.meter-boom.active span:nth-child(5){--x:-25px;--y:-105px}.meter-boom.active span:nth-child(6){--x:30px;--y:100px}.meter-boom.active span:nth-child(7){--x:-85px;--y:-15px}.meter-boom.active span:nth-child(8){--x:90px;--y:15px}
+.dont-room{display:none;animation:complimentIn .55s ease}.dont-room.show{display:block}.dont-yes{margin-top:10px}.private-door{font-size:58px;margin:5px 0 10px;animation:heartPulse 1.2s infinite}.case-file{margin:18px auto;padding:18px;text-align:left;max-width:560px;border:1px dashed #ff9fbe;border-radius:22px;background:linear-gradient(135deg,#fff8fb,#ffeaf2)}.case-file h3{margin:0 0 10px;color:#a91d4e}.case-row{padding:7px 0;font-weight:800;color:#7f2347}.case-final{margin-top:12px;padding-top:12px;border-top:1px solid #ffc4d5;text-align:center;color:#c51f5b;font-size:18px;font-weight:1000}.secret-reveal{margin-top:14px;padding:15px;border-radius:18px;background:#fff;border:1px solid #ffd0dd;color:#7f2347;font-weight:800;line-height:1.55;animation:complimentIn .5s ease}.private-next{margin-top:10px}
+@keyframes meterImpact{0%{transform:scaleY(1)}35%{transform:scaleY(1.28) scaleX(1.02)}65%{transform:scaleY(.9)}100%{transform:scaleY(1)}}@keyframes boomFly{0%{opacity:1;transform:translate(-50%,-50%) scale(.3) rotate(0)}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(1.35) rotate(220deg)}}
+.game-stage{position:relative;min-height:330px;background:linear-gradient(180deg,#fff8fb,#ffe4ef);border:1px solid #ffc4d6;border-radius:28px;overflow:hidden;padding:22px 12px 12px}.game-stage:before{content:'✦  💗  ✦  💕  ✦';position:absolute;top:12px;left:0;right:0;text-align:center;color:#ff9dbb;opacity:.55;letter-spacing:8px;animation:drift 3s ease-in-out infinite}
+.character{position:absolute;bottom:22px;width:43%;max-width:270px;text-align:center;transition:transform .2s}.character.rittika{left:3%}.character.pratim{right:3%}.char-bubble{min-height:45px;display:flex;align-items:center;justify-content:center;background:white;border:1px solid #ffbfd2;border-radius:18px;padding:8px 10px;font-weight:900;color:#8b234b;box-shadow:0 8px 20px rgba(180,45,90,.1);margin-bottom:9px}.char-face{font-size:74px;line-height:1;filter:drop-shadow(0 7px 8px rgba(120,30,70,.13))}.char-name{font-weight:900;color:#a91d4e;margin-top:4px}.char-sub{font-size:11px;opacity:.6;margin-top:2px}
+.weapon-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.weapon{border:1px solid #ffc2d4;background:#fff;border-radius:15px;padding:10px 4px;font-size:13px;font-weight:900;color:#7f2347;box-shadow:0 5px 13px rgba(180,45,90,.07);cursor:pointer}.weapon:active{transform:scale(.94)}.weapon span{display:block;font-size:26px;margin-bottom:3px}.hit-count{display:inline-block;background:#fff;border:1px solid #ffc0d3;color:#a91d4e;border-radius:999px;padding:7px 12px;font-weight:900;margin:8px 0}.hit-message{font-size:18px;font-weight:900;color:#c51f5b;min-height:28px;margin-top:8px}
+.hidden-message{font-size:21px;line-height:1.6;font-weight:800;color:#7f2347;margin:18px auto;max-width:560px}.hidden-heart{font-size:60px;animation:heartPulse 1.2s infinite}
+@keyframes drawerIn{from{opacity:0;transform:translateX(25px) scale(.98)}to{opacity:1;transform:none}}@keyframes panelIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}@keyframes meterGlow{50%{filter:brightness(1.13);transform:scaleY(1.04)}}@keyframes characterHit{0%{transform:rotate(0)}25%{transform:translateX(-12px) rotate(-8deg)}55%{transform:translateX(12px) rotate(8deg)}100%{transform:none}}@keyframes kissPop{0%{transform:scale(1)}45%{transform:scale(1.16) rotate(-3deg)}100%{transform:none}}
+@media(max-width:520px){.weapon-grid{grid-template-columns:repeat(3,1fr)}.character{width:47%}.char-face{font-size:63px}.game-stage{min-height:305px}.menu-btn{top:10px;right:10px}}
+</style>
+</head>
+<body>
+
+<div id="hearts"></div>
+
+<section class="hero" id="hero">
+  <div class="card">
+    <small>WELCOME TO</small>
+    <h1>Pratim's World 💗</h1>
+    <p>A small place made especially for you.</p>
+    <button class="btn" onclick="enterWorld()">ENTER 💗</button>
+  </div>
+</section>
+
+<div id="loveGate" class="love-gate hidden">
+  <div class="love-gate-card">
+    <div class="love-gate-heart">💗</div>
+    <h2 id="gateTitle">Hey wait !! Who are you !???</h2>
+    <p id="gateMessage">Tell me your name first... 👀💗</p>
+    <input id="gateAnswer" placeholder="Type your answer..." autocomplete="off">
+    <div class="love-gate-actions">
+      <button class="btn" id="gateButton" onclick="checkGateAnswer()">Answer 💕</button>
+      <button class="btn secondary hidden" id="yesButton" onclick="answerYes()">Yes 😊</button>
+      <button class="btn secondary hidden" id="noButton" onclick="answerNo()">No 😒</button>
+    </div>
+    <div id="gateError" class="love-error"></div>
+  </div>
+</div>
+
+
+<div id="madamPage" class="surprise-page hidden madam-page">
+  <div class="surprise-card magic-card">
+    <div class="surprise-icon">🌷</div>
+    <h2>Come in, madam 😏😏</h2>
+    <p class="surprise-note" style="font-size:22px!important;font-weight:900;opacity:1">Aap hi ka intezaar tha 😋✨🤌🏽</p>
+    <button class="btn glow" onclick="openWarningPage()">Okay, I'm coming 👀💗</button>
+  </div>
+</div>
+
+<div id="surprise1" class="surprise-page hidden">
+  <div class="surprise-card magic-card">
+    <div class="surprise-icon">💌</div>
+    <h2>One tiny warning...</h2>
+    <p>There are a few things you should know before entering.</p>
+    <p class="surprise-note">This little world has been waiting for you. 💗</p>
+    <button class="btn glow" onclick="openFlirtPage()">I can handle it 😌</button>
+  </div>
+</div>
+
+<div id="flirtPage" class="surprise-page flirt-page hidden">
+  <div class="surprise-card flirt-card">
+    <div class="surprise-icon">😏</div>
+    <h2>Okay, madam...</h2>
+    <p class="surprise-note">Since you're here, you deserve a few reminders.</p>
+    <div id="complimentText" class="compliment">Tap the button. I dare you. 👀</div>
+    <div id="complimentCount" class="compliment-count">0 compliments unlocked</div>
+    <button class="btn glow" onclick="newCompliment()">Compliment me 😌💗</button>
+    <br><br>
+    <button class="btn secret-btn" onclick="openMainPage()">Okay, enough blushing 🙈</button>
+  </div>
+</div>
+
+<div id="site" class="hidden">
+  <button id="menuBtn" class="menu-btn" onclick="openDrawer()" aria-label="Open secret menu">☰</button>
+  <div id="drawer" class="drawer" onclick="if(event.target===this)closeDrawer()">
+    <div class="drawer-card">
+      <div class="drawer-top"><h2>Little Secrets 💗</h2><button class="drawer-close" onclick="closeDrawer()">×</button></div>
+      <button class="drawer-item" onclick="openPanel('meterPanel')">💗 Love Meter</button>
+      <button class="drawer-item" onclick="openPanel('hitPanel')">😈 Hit Pratim</button>
+      <button class="drawer-item" onclick="openPanel('hiddenPanel')">👀 There is something hidden here...</button>
+      <button class="drawer-item" onclick="openPanel('dontPanel')">🚫 Do NOT click this</button>
+      <button class="drawer-item" onclick="openPanel('messagePanel')">💌 A little message for you</button>
+      <button class="drawer-item" onclick="openPanel('whyPanel')">✨ Why I made this</button>
+      <div class="drawer-note">You were never supposed to find all of these. 😌</div>
+    </div>
+  </div>
+  <section id="meterPanel" class="panel"><div class="panel-inner">
+    <div class="panel-head"><button class="back-btn" onclick="closePanel('meterPanel')">← Back</button><h2>💗 Love Meter</h2></div>
+    <div class="love-meter-card">
+      <div class="meter-label">How much Pratim Loves me?? 😋💗</div>
+      <div class="meter-hearts">🤍 🤍 🤍 🤍 🤍 🤍 🤍 🤍 🤍 🤍</div>
+      <div class="meter-track"><div class="meter-fill" id="loveMeterFill"></div></div>
+      <div class="meter-percent" id="loveMeterPercent">0%</div>
+      <div class="meter-sub" id="loveMeterSub">Hmm... let's find out. 👀</div>
+      <button class="btn glow" id="loveMeterBtn" onclick="runLoveMeter()">How much Pratim Loves me?? 💗</button>
+      <div class="meter-boom" id="meterBoom"><span>💗</span><span>💖</span><span>✨</span><span>💥</span><span>🥹</span><span>💗</span><span>✨</span><span>💕</span></div>
+      <div class="meter-result" id="loveMeterResult">YOU GOT THE RIGHT PERSON!! 💗<br><br>Pratim loves you more...<br><b>beyond your imagination. 🥹💗</b><br><br><small>Love level: Apparently, this meter wasn't built for him. 😭</small></div>
+    </div>
+  </div></section>
+  <section id="hitPanel" class="panel"><div class="panel-inner">
+    <div class="panel-head"><button class="back-btn" onclick="closePanel('hitPanel')">← Back</button><h2>😈 Hit Pratim</h2></div>
+    <div class="love-meter-card"><div style="font-weight:900;color:#a91d4e">Choose your weapon, madam... 👀</div><div class="hit-count">Hits: <span id="hitCount">0</span></div>
+      <div class="game-stage">
+        <div class="character rittika" id="rittikaChar"><div class="char-bubble" id="rittikaBubble">Hehe... 😌</div><div class="char-face">👧🏻🎀</div><div class="char-name">Rittika 💗</div><div class="char-sub">the cutest girl here. dangerously cute. 🥹</div></div>
+        <div class="character pratim" id="pratimChar"><div class="char-bubble" id="pratimBubble">I love you 😘💗</div><div class="char-face">👦🏻</div><div class="char-name">Pratim 💗</div><div class="char-sub">still in love. obviously.</div></div>
+      </div>
+      <div class="hit-message" id="hitMessage">Go on... I'm ready. 😌</div>
+      <div class="weapon-grid">
+        <button class="weapon" onclick="hitPratim('kiss','💋')"><span>💋</span>Kiss</button><button class="weapon" onclick="hitPratim('hammer','🔨')"><span>🔨</span>Hammer</button><button class="weapon" onclick="hitPratim('stone','🪨')"><span>🪨</span>Stone</button><button class="weapon" onclick="hitPratim('gun','🔫')"><span>🔫</span>Gun</button><button class="weapon" onclick="hitPratim('pistol','🔫')"><span>🔫</span>Pistol</button><button class="weapon" onclick="hitPratim('slap','👋')"><span>👋</span>Slap</button><button class="weapon" onclick="hitPratim('more','💥')"><span>💥</span>More</button>
+      </div>
+    </div>
+  </div></section>
+  <section id="hiddenPanel" class="panel"><div class="panel-inner"><div class="panel-head"><button class="back-btn" onclick="closePanel('hiddenPanel')">← Back</button><h2>👀 Secret Found</h2></div><div class="hidden-note-card"><div class="hidden-heart">💗</div><div class="hidden-message">If you're reading this…<br>congratulations.<br><br>You found another reason to smile.<br><br>And yes, I made this just for you. 💗</div><button class="btn secret-btn" onclick="createHearts(10)">Okay... I'm smiling 🥹</button></div></div></section>
+  <section id="dontPanel" class="panel"><div class="panel-inner">
+    <div class="panel-head"><button class="back-btn" onclick="closePanel('dontPanel')">← Back</button><h2>🚫 You were warned</h2></div>
+    <div class="hidden-note-card">
+      <div class="hidden-heart">👀</div>
+      <div class="hidden-message" id="dontMessage">Interested ??<br><b>Mmm hmmmmmm 😏💋</b></div>
+      <div id="dontChoice">
+        <button class="btn glow dont-yes" onclick="enterPrivateRoom()">Yes 😏</button>
+        <button class="btn secret-btn dont-yes" onclick="dontSayNo()">Nooo 🙈</button>
+      </div>
+      <div id="privateRoom" class="dont-room">
+        <div class="private-door">🌚🔐</div>
+        <div class="hidden-message" id="privateIntro">Okay… get in 🌚<br><small>Door locked. You're officially in the private room now. 😌💗</small></div>
+        <button class="btn glow" onclick="openCaseFile()">Enter the secret room →</button>
+        <div id="caseFile" class="dont-room">
+          <div class="case-file">
+            <h3>🔎 CASE FILE: RITTIKA</h3>
+            <div class="case-row">☑ Too cute. It's becoming suspicious. 🫠</div>
+            <div class="case-row">☑ Dangerous smile detected. 😭💗</div>
+            <div class="case-row">☑ Makes Pratim forget what he was saying. 👀</div>
+            <div class="case-row">☑ Somehow gets prettier every day. ✨</div>
+            <div class="case-row">☑ Has one boy completely wrapped around her finger. 😌</div>
+            <div class="case-final">FINAL CONCLUSION:<br>Pratim is hopelessly in love. 💗</div>
+          </div>
+          <button class="btn secret-btn" onclick="revealPrivateSecret(1)">Open the first secret 👀</button>
+          <div id="privateSecret1" class="secret-reveal hidden">Secret #1 💌<br><br>Pratim has a weakness.<br><br><b>You. Obviously. 😭💗</b></div>
+          <button id="secret2Btn" class="btn secret-btn private-next hidden" onclick="revealPrivateSecret(2)">One more secret… 😏</button>
+          <div id="privateSecret2" class="secret-reveal hidden">Secret #2 🌚<br><br>If you were standing in front of him right now, he would probably forget what he was about to say.<br><br>He'd just look at you and smile like an idiot. 🥹💗</div>
+          <button id="secret3Btn" class="btn glow private-next hidden" onclick="revealPrivateSecret(3)">Final secret 💗</button>
+          <div id="privateSecret3" class="secret-reveal hidden">Okay… last one.<br><br><b>You weren't supposed to find this.</b><br><br>But since you did…<br><br>somewhere in this little world, there's a boy who made all of this just to make one girl blush. 😌💗<br><br><b>And yes. That's you. 🤭✨</b></div>
+        </div>
+      </div>
+    </div>
+  </div></section>
+  <section id="messagePanel" class="panel"><div class="panel-inner"><div class="panel-head"><button class="back-btn" onclick="closePanel('messagePanel')">← Back</button><h2>💌 A little message</h2></div><div class="hidden-note-card"><div class="hidden-message">I hope you know that somewhere in this world,<br>there's a boy who thinks you're ridiculously special.<br><br>Unfortunately for you…<br><b>that boy is me. 😌💗</b></div><button class="btn secret-btn" onclick="createHearts(10)">Close with a smile 💗</button></div></div></section>
+  <section id="whyPanel" class="panel"><div class="panel-inner"><div class="panel-head"><button class="back-btn" onclick="closePanel('whyPanel')">← Back</button><h2>✨ Why I made this</h2></div><div class="hidden-note-card"><div class="hidden-heart">🌷</div><div class="hidden-message">Because you mean something to me.<br><br>Because you deserve something special.<br><br>Because I wanted you to feel, even for a moment, just how much you're loved. 💗</div><button class="btn secret-btn" onclick="createHearts(12)">Thank you for being you 🥹</button></div></div></section>
+  <div class="ticker">💗 Pratim loves you so much</div>
+  <div class="water">💧 Stay Hydrated<br>Drink Water!</div>
+
+  <main>
+    <section class="card" style="text-align:center">
+      <small>WELCOME</small>
+      <h1>Welcome! Pratim Manna's Bou 💗🧿</h1>
+      <p>A little world of memories, messages and happy moments.</p>
+    </section>
+
+    <section id="anniv" class="card anniv hidden">
+      <h2>CONGRATULATIONS!! 😃💗✨</h2>
+      <div style="font-size:22px;font-weight:900">Happy Anniversary!! 🥰💗🧿</div>
+      <p>God bless you both!! ❤️🧿</p>
+      <div style="font-size:28px;line-height:1.5">❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️</div>
+    </section>
+
+    <section class="card">
+      <h2>💗 Our Anniversary</h2>
+      <div class="timer" id="timer">Loading...</div>
+      <small>Countdown to 10th July</small>
+    </section>
+
+    <section class="card">
+      <h2>🤖 Ask Pratim's Love Bot</h2>
+      <div class="chat" id="chat">
+        <div class="bubble">Hi! Ask me anything about Pratim. 💗</div>
+      </div>
+      <input id="question" placeholder="Pratim loves me how much?">
+      <button class="btn" onclick="askBot()">Ask 💕</button>
+    </section>
+
+    <section class="card">
+      <h2>📸 Our Memories</h2>
+      <p><small>Add your photos and save little captions.</small></p>
+      <input type="file" id="photo" accept="image/*">
+      <input id="caption" placeholder="Write a caption...">
+      <button class="btn" onclick="savePhoto()">Save Memory</button>
+      <div class="memgrid" id="memories"></div>
+    </section>
+
+    <section class="card">
+      <h2>📝 Our Notes</h2>
+      <textarea id="note" rows="4" placeholder="Write a memory or a little message..."></textarea>
+      <button class="btn" onclick="saveNote()">Save Note</button>
+      <div id="notes"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+function enterWorld(){
+  $("hero").style.display="none";
+  $("loveGate").classList.remove("hidden");
+  $("gateAnswer").focus();
+  createHearts(18);
+}
+
+function checkGateAnswer(){
+  const answer=$("gateAnswer").value.trim();
+  $("gateError").textContent="";
+
+  if(answer==="Rittika"){
+    $("gateTitle").textContent="Oh you're Pratim's wife right ??😊🙏🏽";
+    $("gateMessage").textContent="Just one more thing... 💗";
+    $("gateAnswer").classList.add("hidden");
+    $("gateButton").classList.add("hidden");
+    $("yesButton").classList.remove("hidden");
+    $("noButton").classList.remove("hidden");
+    createHearts(22);
+  }else{
+    $("gateMessage").textContent="Sorry, this page is only for Pratim's Wife, not for you !";
+    $("gateError").textContent="Please enter the correct word to continue. 💗";
+    $("gateAnswer").value="";
+    $("gateAnswer").focus();
+    createHearts(8);
+  }
+}
+
+function answerYes(){
+  $("loveGate").classList.add("hidden");
+  $("madamPage").classList.remove("hidden");
+  createHearts(24);
+}
+
+function openWarningPage(){
+  $("madamPage").classList.add("hidden");
+  $("surprise1").classList.remove("hidden");
+  createHearts(12);
+}
+
+function openFlirtPage(){
+  $("surprise1").classList.add("hidden");
+  $("flirtPage").classList.remove("hidden");
+  newCompliment();
+  createHearts(14);
+}
+
+function openMainPage(){
+  $("flirtPage").classList.add("hidden");
+  $("site").classList.remove("hidden");
+  $("site").classList.add("main-reveal");
+  createHearts(32);
+  setTimeout(()=>$("site").classList.remove("main-reveal"),1000);
+}
+
+const compliments=[
+"You have absolutely no business being this adorable. 😭💗",
+"Please stop looking this pretty. I am trying to behave. 😏",
+"Your smile is honestly one of my favourite distractions. 🫠💗",
+"You're cute, you're gorgeous, and somehow you still manage to be even more attractive. Unfair. 😌",
+"If being beautiful was a competition, I'd stop pretending anyone else had a chance. 😏💗",
+"You are dangerously easy to fall for. Good thing I already did. 🫣❤️",
+"I hope you realise how ridiculously kissable that face is. 😌💋",
+"You're the kind of pretty that makes someone forget what they were about to say. 🫠",
+"Honestly, you're becoming my favourite reason to lose focus. 😏",
+"That face should come with a warning label. Seriously. 🔥💗",
+"You make being obsessed look like a perfectly reasonable decision. 😌",
+"If I were standing next to you right now, I would probably forget how to act normal. 🫣",
+"You're not my type. You're the reason I have a type. 😏💗",
+"I could compliment your eyes, but I'd probably get distracted halfway through. 👀",
+"You somehow make cute look unfairly attractive. That's a talent. 😭💗",
+"You're the kind of person I could stare at and still ask for five more minutes. 🫠",
+"I blame you for at least 70% of my random smiling. 😌💗",
+"You are ridiculously pretty. I would like to file a formal complaint. 😤❤️",
+"If I had to choose my favourite view, I already know exactly where I'd look. 👀💗",
+"You make my heart act like it has absolutely no dignity. 😭",
+"I hope you're blushing right now. Because yes, that was the plan. 😏",
+"You're dangerously close to becoming my favourite distraction forever. 💗",
+"Your existence is doing suspiciously good things to my mood. 🫠",
+"I don't need a perfect day. I just need a little bit of you in it. 💗",
+"You are, quite honestly, ridiculously hard not to adore. 😌",
+"If cute were illegal, I'd be visiting you behind bars every day. 😏😂",
+"You're the reason the word 'beautiful' feels slightly incomplete. 💗",
+"I could write a hundred compliments and still run out of ways to describe you. 🥹",
+"You're not just pretty. You're the kind of pretty that stays in someone's head. 👀",
+"I was going to behave today. Then I remembered you exist. 😏💗",
+"You're my favourite little problem. And I have no intention of solving it. 😌",
+"You make 'just one more look' dangerously easy. 🫣",
+"You're basically a walking 'why am I smiling?' moment. 😭💗",
+"If I ever look at you for too long, just know I'm appreciating the view. 😏",
+"You are way too charming for someone who is already this pretty. Unfair. 💗",
+"I think your smile deserves its own fan club. I volunteer as president. 😌",
+"You're the sort of person who can make a room feel prettier just by being in it. 💗",
+"You make my standards look suspiciously specific. 😏",
+"You're adorable enough to make me forget every sensible thought I had. 🫠",
+"I would absolutely choose you again. Then stare at you. Then choose you again. 💗",
+"You're the plot twist I never saw coming and never want to lose. 🥹",
+"Your face is making a very convincing argument for me to keep staring. 👀",
+"You're beautiful in that very dangerous 'I could get used to this' kind of way. 😏",
+"I like you. A little too much. Actually, that's a lie. There is no such thing. 💗",
+"You're ridiculously easy to miss and even easier to adore. 🫂",
+"If butterflies had a favourite person, I'm pretty sure they'd pick you too. 🦋💗",
+"You make my heart do things that are frankly embarrassing. 😭",
+"I hope you know that you're someone's favourite thought. Spoiler: it's me. 😌💗",
+"You're pretty. You're cute. You're trouble. Unfortunately, I like all three. 😏",
+"One smile from you and suddenly I'm not interested in behaving anymore. 🫣",
+"You could literally just exist and somehow I'd still find it adorable. 💗",
+"I don't know what you put in that smile, but it is highly effective. 😏",
+"You are the human equivalent of my favourite notification. 💗",
+"If I had a rupee for every time you made me smile, I'd still probably spend it on you. 😌",
+"You make 'my favourite person' sound like an understatement. 🥹💗",
+"I think you're secretly aware of how attractive you are. And honestly? Good. 😏",
+"You are very, very cute. This investigation is now closed. 👀💗",
+"I would flirt with you all day, but then we'd both get nothing done. 😭😏",
+"You have the kind of face that makes compliments feel necessary. 💗",
+"You're my favourite reason to be a little cheesy. And yes, I'm proud of it. 😌",
+"You make ordinary moments feel suspiciously romantic. 💗",
+"If you keep being this adorable, I'm going to run out of self-control. 🫣",
+"You're the only distraction I would happily choose every single time. 😏💗",
+"You look like someone I could fall for repeatedly. Oh wait... I do. 🥹",
+"I could never get bored of calling you beautiful. Never. 💗",
+"You're dangerously close to making me write an entire paragraph about your smile. 😭",
+"You're cute enough to make me forgive you for being this distracting. 😌",
+"I don't know how you do it, but you make my heart go 'oh, there she is.' 💗",
+"You are absolutely my favourite kind of trouble. 😏",
+"If I had to describe you in one word, I'd need a much bigger dictionary. 🥹",
+"You make me want to keep choosing you in every tiny way. 💗",
+"You're gorgeous. I know, I know—you already knew that. But I needed to say it anyway. 😏",
+"You have no idea how cute you look when you don't even realise you're being cute. 🫠",
+"I could tease you forever and still find new reasons to smile at you. 💗",
+"You're basically my favourite weakness. And I am not recovering. 😌",
+"You make my heart feel embarrassingly soft. 🥹💗",
+"If this button could blush, it would probably be you by now. 😏",
+"You deserve a compliment every time you open this page. So here: you're gorgeous. 💗",
+"I hope this made you smile. If it did, congratulations—you just made my day too. 🫂"
+];
+let complimentBag=[];let complimentCount=0;
+function refillCompliments(){complimentBag=[...compliments].sort(()=>Math.random()-.5)}
+function newCompliment(){
+  if(!complimentBag.length) refillCompliments();
+  const text=complimentBag.pop();
+  complimentCount++;
+  const el=$("complimentText");
+  el.classList.remove("compliment"); void el.offsetWidth; el.classList.add("compliment"); el.textContent=text;
+  $("complimentCount").textContent=complimentCount+" compliment"+(complimentCount===1?"":"s")+" unlocked";
+  if(complimentCount%10===0) createHearts(8);
+}
+
+function openDrawer(){ $("drawer").classList.add("show"); }
+function closeDrawer(){ $("drawer").classList.remove("show"); }
+function openPanel(id){ closeDrawer(); $(id).classList.add("show"); if(id==="dontPanel") resetDontPanel(); }
+function closePanel(id){ $(id).classList.remove("show"); }
+
+let loveMeterRunning=false;
+function resetLoveMeter(){
+  const fill=$("loveMeterFill"), pct=$("loveMeterPercent"), result=$("loveMeterResult"), sub=$("loveMeterSub"), btn=$("loveMeterBtn"), boom=$("meterBoom");
+  fill.style.width="0%"; fill.style.background="#fff"; fill.style.boxShadow="none"; fill.classList.remove("meter-running","meter-impact");
+  pct.textContent="0%"; sub.textContent="Hmm... let's find out. 👀"; result.classList.remove("show"); boom.classList.remove("active");
+  btn.disabled=false; btn.textContent="How much Pratim Loves me?? 💗"; loveMeterRunning=false;
+}
+function runLoveMeter(){
+  if(loveMeterRunning)return;
+  loveMeterRunning=true;
+  const fill=$("loveMeterFill"), pct=$("loveMeterPercent"), result=$("loveMeterResult"), sub=$("loveMeterSub"), btn=$("loveMeterBtn"), boom=$("meterBoom");
+  btn.disabled=true; btn.textContent="Calculating... 👀💗"; result.classList.remove("show"); boom.classList.remove("active");
+  fill.classList.add("meter-running");
+  let start=performance.now();
+  const slowDuration=5200, rocketStart=86, rocketDuration=520;
+  function frame(now){
+    const elapsed=now-start;
+    let progress;
+    if(elapsed<slowDuration){
+      const t=elapsed/slowDuration; progress=rocketStart*(1-Math.pow(1-t,2.1));
+    }else{
+      const t=Math.min(1,(elapsed-slowDuration)/rocketDuration); progress=rocketStart+(100-rocketStart)*(t*t*(3-2*t));
+    }
+    const p=Math.min(100,progress);
+    pct.textContent=Math.floor(p)+"%"; fill.style.width=p+"%";
+    const r=Math.round(255-(255-242)*(p/100)), g=Math.round(255-(255-62)*(p/100)), b=Math.round(255-(255-120)*(p/100));
+    fill.style.background=`rgb(${r},${g},${b})`;
+    fill.style.boxShadow=p>8?`0 0 ${Math.min(22,5+p/3)}px rgba(242,62,120,.35)`:"none";
+    if(p<35) sub.textContent="Awww... it's starting. 🥹";
+    else if(p<65) sub.textContent="Wait... this is getting serious. 😳💗";
+    else if(p<86) sub.textContent="Okay... why is this still going?! 😭";
+    else if(p<100) sub.textContent="ROCKET MODE ACTIVATED. 🚀💗";
+    if(p<100){ requestAnimationFrame(frame); return; }
+    fill.style.width="100%"; fill.classList.remove("meter-running"); fill.classList.add("meter-impact");
+    pct.textContent="100% 💗"; sub.textContent="System limit reached. Obviously. 😭";
+    boom.classList.remove("active"); void boom.offsetWidth; boom.classList.add("active");
+    document.body.animate([{transform:"scale(1)"},{transform:"scale(1.012)"},{transform:"scale(.997)"},{transform:"scale(1)"}],{duration:430,easing:"ease-out"});
+    createHearts(28);
+    setTimeout(()=>{ result.classList.add("show"); btn.disabled=false; btn.textContent="Measure again 💗"; loveMeterRunning=false; },260);
+  }
+  requestAnimationFrame(frame);
+}
+
+let hitCount=0;
+const hitLines={kiss:["Okay... that's a very unfair weapon. 😭💋","You kissed me and called it a hit?! 😭💗","Fine. Hit me like that again. 😌💋"],hammer:["OWW 😭💗 ...still love you though.","That hammer had attitude. 😭","You really chose violence today, madam. 😂💗"],stone:["A STONE?! 😭 I still love you.","That was personal. 😭💗","Okay okay, you win. But I love you. 😌"],gun:["PEW PEW?! 😭💗 I love you anyway.","You shot my heart... and it was already yours. 😭💗","That was dramatic. I approve. 😌"],pistol:["Tiny gun, huge attitude. 😂💗","You really came prepared, huh? 😭","Still saying it: I love you 😘💗"],slap:["Madam?! 😭💗","Okayyy, I deserved that... maybe. 😌","That slap changed nothing. Still love you. 🥹"],more:["Oh no... she found the MORE button. 😭💗","This is getting dangerous. 😂","Whatever you choose, I still love you. 😘💗"]};
+function hitPratim(type,weapon){
+  hitCount++; $("hitCount").textContent=hitCount;
+  const p=$("pratimChar"),r=$("rittikaChar");
+  p.classList.remove("hit","kiss"); void p.offsetWidth; p.classList.add(type==='kiss'?"kiss":"hit");
+  r.classList.remove("hit"); void r.offsetWidth; r.classList.add("hit");
+  const arr=hitLines[type]||hitLines.more; $("hitMessage").textContent=arr[Math.floor(Math.random()*arr.length)];
+  $("pratimBubble").textContent="I love you 😘💗";
+  $("rittikaBubble").textContent=weapon+" Again! 😈";
+  if(hitCount===10) $("hitMessage").textContent="10 hits?! 😭💗 And somehow I love you even more.";
+  if(hitCount===25) $("hitMessage").textContent="25?! You are enjoying this WAY too much. 😂💗";
+  if(hitCount===50) $("hitMessage").textContent="50 hits already?! I still choose you. Every single time. 🥹💗";
+  if(hitCount%10===0) createHearts(7);
+}
+let dontClicks=0;
+function resetDontPanel(){
+  $("dontMessage").innerHTML="Interested ??<br><b>Mmm hmmmmmm 😏💋</b>";
+  $("dontChoice").classList.remove("hidden");
+  $("privateRoom").classList.remove("show");
+  $("caseFile").classList.remove("show");
+  ["privateSecret1","privateSecret2","privateSecret3","secret2Btn","secret3Btn"].forEach(id=>$(id).classList.add("hidden"));
+}
+function dontSayNo(){
+  $("dontMessage").innerHTML="Hmm... pretending not to be interested? 👀<br><br><b>Nice try. 😏💗</b>";
+  createHearts(5);
+}
+function enterPrivateRoom(){
+  $("dontChoice").classList.add("hidden");
+  $("privateRoom").classList.add("show");
+  $("dontMessage").innerHTML="Interested ??<br><b>Mmm hmmmmmm 😏💋</b>";
+  createHearts(10);
+}
+function openCaseFile(){
+  $("caseFile").classList.add("show");
+  createHearts(7);
+}
+function revealPrivateSecret(n){
+  if(n===1){ $("privateSecret1").classList.remove("hidden"); $("secret2Btn").classList.remove("hidden"); }
+  if(n===2){ $("privateSecret2").classList.remove("hidden"); $("secret3Btn").classList.remove("hidden"); }
+  if(n===3){ $("privateSecret3").classList.remove("hidden"); createHearts(12); }
+}
+
+function showLittleSurprise(){$("littleSurprise").classList.toggle("show");createHearts(7)}
+
+function answerNo(){
+  $("gateMessage").textContent="Naah, you're not allowed 😒";
+  $("gateError").textContent="";
+  createHearts(10);
+}
+
+function createHearts(n){
+  for(let i=0;i<n;i++){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.textContent=["❤️","💗","💖","💕","🩷"][Math.floor(Math.random()*5)];
+    h.style.left=Math.random()*100+"%";
+    h.style.fontSize=(16+Math.random()*24)+"px";
+    h.style.animationDuration=(4+Math.random()*4)+"s";
+    $("hearts").appendChild(h);
+    setTimeout(()=>h.remove(),9000);
+  }
+}
+setInterval(()=>createHearts(1),1300);
+
+function detectBotLanguage(q){
+  const banglishWords=["bhalobashe","bhalobasha","koto","kemon","tomake","amar","thakbe","chirodin","bhalo","chele","mone","lage","ki","keno","hobe","korbe","pratim"];
+  return banglishWords.some(w=>new RegExp("\\b"+w+"\\b","i").test(q)) ? "banglish" : "english";
+}
+
+function getBotReply(q){
+  const s=q.toLowerCase().replace(/[!?.,'"]/g," ").replace(/\\s+/g," ").trim();
+  const banglish=detectBotLanguage(q);
+
+  if(/pratim.*(loves|love|bhalobashe|bhalobasha).*me|does pratim love me/.test(s)){
+    return banglish
+      ? "Haa, bhalobashe. 💗 Pratim-er kachhe tumi just kono ordinary person na—tumi emon ekjon, jar jonno o nijer moto kore effort korte chay. Ei puro little world-tao tar ekta proof. 🥰🧿"
+      : "Yes, he does. 💗 You’re not just an ordinary person to Pratim—you’re someone he genuinely wants to make feel special. This little world itself is one of his ways of showing that. 🥰🧿";
+  }
+
+  if(/how much.*(love|loves)|how much.*pratim|koto.*(bhalobashe|bhalobasha)/.test(s)){
+    return banglish
+      ? "Scale diye eta measure kora mushkil 😅💗. Kintu enough to make him put this much thought, effort and emotion into something just for you. So… onekta. Khub onekta. 🥰"
+      : "That’s not really something you can measure on a scale 😅💗. But it’s enough to make him put this much thought, effort and emotion into something made especially for you. So… a lot. Really, really a lot. 🥰";
+  }
+
+  if(/forever|chirodin|thakbe.*(forever|sathe)|stay.*(with|together)/.test(s)){
+    return banglish
+      ? "Forever-er promise ami nijer theke guarantee korte parbo na—future to future-i. 😌 But Pratim-er intention niye bolle, o emon ekjon je important manush-ke easily chere dite chay na. 💗"
+      : "I can’t honestly guarantee the future for him—no one can. 😌 But from what this little world says about him, Pratim is someone who doesn’t want to casually let go of the person who truly matters to him. 💗";
+  }
+
+  if(/good boy|bhalo chele|good.*boy|kemon.*chele/.test(s)){
+    return banglish
+      ? "Hmm… perfect bole claim korbo na 😅. Kintu caring, effort dewa, ar special manush-ke special feel koranor cheshta—ei dike Pratim-er marks definitely bhalo. 😌💗"
+      : "I wouldn’t claim he’s perfect 😅. But when it comes to caring, putting in effort, and making someone special feel genuinely special—Pratim definitely gets good marks. 😌💗";
+  }
+
+  if(/kemon.*lage|how.*feel.*about.*pratim|what.*think.*of.*pratim/.test(s)){
+    return banglish
+      ? "Honestly? Amar kachhe Pratim-ke emon ekjon mone hoy je feelings-ta actions diye dekhate bhalobashe. Ar tomake niye o je genuinely serious, seta ei app-ta dekhei besh clear. 💗✨"
+      : "Honestly? Pratim seems like someone who prefers showing his feelings through actions. And from the effort behind this little app, it’s pretty clear that he genuinely cares about you. 💗✨";
+  }
+
+  if(/who is pratim|pratim ke/.test(s)){
+    return banglish
+      ? "Pratim? 😌 Ei app-er creator, obviously! Ar amar verdict—ektu pagol, ektu cheesy, but definitely caring. 😅💗"
+      : "Pratim? 😌 The creator of this little world, obviously! My verdict—slightly crazy, slightly cheesy, but definitely caring. 😅💗";
+  }
+
+  if(/miss|mone pore/.test(s)){
+    return banglish
+      ? "Jodi question-ta hoy Pratim tomake miss kore kina—amar bot verdict: je manush tomar jonno eto kichhu banay, tar mone pora-ta pretty likely. 😌💗"
+      : "If you’re asking whether Pratim misses you—my bot verdict is: someone who puts this much thought into making something for you probably thinks about you quite a lot. 😌💗";
+  }
+
+  return banglish
+    ? "Hmm… eta niye Pratim-ke niye amar answer hobe: o perfect na, but je manush-ke genuinely care kore tar jonno o effort dite jane. 💗 Tumi aro specific kore jiggesh korte paro—ami honest answer debo. 😊"
+    : "Hmm… my answer about Pratim would be: he’s not perfect, but when someone genuinely matters to him, he knows how to put in the effort. 💗 Ask me something more specific about him—I’ll give you an honest answer. 😊";
+}
+
+function askBot(){
+  const q=$("question").value.trim();
+  if(!q)return;
+
+  const user=document.createElement("div");
+  user.className="bubble me";
+  user.textContent=q;
+  $("chat").appendChild(user);
+
+  const reply=document.createElement("div");
+  reply.className="bubble";
+  reply.textContent=getBotReply(q);
+
+  setTimeout(()=>{
+    $("chat").appendChild(reply);
+    $("chat").scrollTop=$("chat").scrollHeight;
+  },450);
+
+  $("question").value="";
+}
+
+let data=JSON.parse(localStorage.getItem("pratim_world")||'{"photos":[],"notes":[]}');
+
+function saveData(){
+  localStorage.setItem("pratim_world",JSON.stringify(data));
+}
+
+function saveNote(){
+  const n=$("note").value.trim();
+  if(!n)return;
+  data.notes.unshift(n);
+  saveData();
+  $("note").value="";
+  render();
+}
+
+function savePhoto(){
+  const file=$("photo").files[0];
+  if(!file)return alert("Please choose a photo first.");
+
+  const reader=new FileReader();
+  reader.onload=()=>{
+    data.photos.unshift({
+      src:reader.result,
+      caption:$("caption").value.trim()||"A beautiful memory 💗"
+    });
+    try{
+      saveData();
+      render();
+      $("photo").value="";
+      $("caption").value="";
+    }catch(e){
+      alert("Storage is full. Please use a smaller photo.");
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function render(){
+  $("memories").innerHTML=data.photos.map(x=>
+    '<div class="memory"><img src="'+x.src+'"><small>'+escapeHTML(x.caption)+'</small></div>'
+  ).join("");
+
+  $("notes").innerHTML=data.notes.map(x=>
+    '<div class="memory" style="margin-top:8px">'+escapeHTML(x)+'</div>'
+  ).join("");
+}
+
+function escapeHTML(s){
+  return s.replace(/[&<>"']/g,m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+
+function updateTimer(){
+  const now=new Date();
+  let year=now.getFullYear();
+  let target=new Date(year,6,10);
+
+  if(target<now) target=new Date(year+1,6,10);
+
+  if(now.getMonth()===6 && now.getDate()===10){
+    $("anniv").classList.remove("hidden");
+    $("timer").textContent="TODAY! 💗";
+    createHearts(12);
+    return;
+  }
+
+  const diff=target-now;
+  const days=Math.floor(diff/86400000);
+  const hours=Math.floor(diff/3600000)%24;
+  const minutes=Math.floor(diff/60000)%60;
+  const seconds=Math.floor(diff/1000)%60;
+
+  $("timer").textContent=days+"d "+hours+"h "+minutes+"m "+seconds+"s";
+}
+
+render();
+updateTimer();
+setInterval(updateTimer,1000);
+</script>
+</body>
+</html>
